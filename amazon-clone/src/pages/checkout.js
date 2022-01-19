@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { useSelector } from 'react-redux'
+import CheckoutProduct from "../components/CheckoutProduct"
 import { selectItems } from "../slices/basketSlice"
 
 function checkout() {
@@ -15,7 +16,8 @@ function checkout() {
               {items.length === 0 ? "Your Amazon Basket is empty." : "Shopping Basket"}
             </h1>
             {items.map((item, i) => (
-              
+              <CheckoutProduct key={i} id={item.id} title={item.title} rating={item.rating} price={item.price} description={item.description}
+                category={item.category} image={item.image} hasPrime={item.hasPrime}/>
             ))}
 
           </div>
