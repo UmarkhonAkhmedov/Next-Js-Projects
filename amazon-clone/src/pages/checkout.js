@@ -4,11 +4,24 @@ import CheckoutProduct from "../components/CheckoutProduct"
 import { selectItems, selectTotal } from "../slices/basketSlice"
 import CurrencyFormat from "react-currency-format"
 import { useSession } from "next-auth/react"
+import { loadStripe } from "@stripe/stripe-js"
+import axios from "axios"
+
+const stripePromise = loadStripe(process.env.stripe_public_key)
 
 function checkout() {
   const items = useSelector(selectItems)
   const total = useSelector(selectTotal)
   const { data: session } = useSession()
+  const createCheckoutSession = async () => {
+    const stripe = await stripePromise
+    const checkoutSession = await axios.post('/api/create-checkout-session', 
+    {
+      items: items,
+      email: session.user.email,
+    })
+
+  }
 
   return (
     <div className="bg-gray-100">
@@ -37,7 +50,7 @@ function checkout() {
               <span className="fon-bold">
                 <CurrencyFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'$'} />  
               </span></h2> 
-              <button disabled={!session} className={`button mt-2 ${!session && 'from-gray-300 to-gray-500 border-gray-200 text-gray-300 cursor-not-allowed'}`}>
+              <button role="link" onClick={createCheckoutSession} disabled={!session} className={`button mt-2 ${!session && 'from-gray-300 to-gray-500 border-gray-200 text-gray-300 cursor-not-allowed'}`}>
                 {!session ? 'Sing in to checkout' : 'Proceed to checkout'}
               </button>
             </>
